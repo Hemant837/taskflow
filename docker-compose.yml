@@ -1,0 +1,53 @@
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: taskflow-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - taskflow-network
+
+  backend:
+    build:
+      context: ./backend
+    container_name: taskflow-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - taskflow-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: taskflow-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: taskflow_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d taskflow_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - taskflow-network
+
+volumes:
+  postgres-data:
+
+networks:
+  taskflow-network:
+    driver: bridge
