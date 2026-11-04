@@ -1,8 +1,4 @@
-import {
-  CheckCircle2,
-  LayoutDashboard,
-  ListTodo,
-} from "lucide-react";
+import { CheckCircle2, LayoutDashboard, ListTodo } from "lucide-react";
 
 const Sidebar = () => {
   return (
@@ -37,6 +33,6 @@ const Sidebar = () => {
       </div>
     </aside>
   );
-}
+};
 
 export default Sidebar;
